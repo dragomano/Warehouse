@@ -1,0 +1,6 @@
+**/.idea/
+**/.vscode/
+**/vendor/
+Themes/default/languages/Warehouse/*
+!Themes/default/languages/Warehouse/index.php
+!Themes/default/languages/Warehouse/.english.php
