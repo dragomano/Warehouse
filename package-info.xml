@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>Bugo:Warehouse</id>
+	<name>Warehouse</name>
+	<version>0.1</version>
+	<type>modification</type>
+
+	<install for="2.1.*">
+		<database>database.php</database>
+		<require-dir name="Sources" destination="$boarddir" />
+		<require-dir name="Themes" destination="$boarddir" />
+		<hook hook="integrate_pre_include" file="$sourcedir/Warehouse/app.php" />
+		<redirect url="?action=admin;area=modsettings;sa=warehouse" timeout="1000" />
+	</install>
+
+	<uninstall for="2.1.*">
+		<hook hook="integrate_pre_include" file="$sourcedir/Warehouse/app.php" reverse="true" />
+		<remove-file name="$themedir/scripts/warehouse.js" />
+		<remove-file name="$themedir/css/warehouse.css" />
+		<remove-dir name="$sourcedir/Warehouse" />
+		<remove-dir name="$themedir/Warehouse" />
+		<remove-dir name="$languagedir/Warehouse" />
+	</uninstall>
+
+</package-info>
