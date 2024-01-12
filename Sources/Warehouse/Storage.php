@@ -69,21 +69,21 @@ class Storage
 
 		$context['wh_buttons'] = [
 			[
-				'href'        => $scripturl . '?action=warehouse',
+				'href'        => WH_BASE_URL,
 				'title'       => $txt['warehouse_buttons'][0],
 				'is_selected' => empty($context['current_subaction']),
 				'icon'        => '<i class="main_icons notify_button"></i>',
 				'show'        => true
 			],
 			[
-				'href'        => $scripturl . '?action=warehouse;sa=user',
+				'href'        => WH_BASE_URL . ';sa=user',
 				'title'       => $txt['warehouse_buttons'][1],
 				'is_selected' => $context['current_subaction'] === 'user',
 				'icon'        => '<i class="main_icons packages"></i>',
 				'show'        => allowedTo('warehouse_manage_boxes_own')
 			],
 			[
-				'href'        => $scripturl . '?action=warehouse;sa=test',
+				'href'        => WH_BASE_URL . ';sa=test',
 				'title'       => $txt['warehouse_buttons'][2],
 				'is_selected' => $context['current_subaction'] === 'test',
 				'icon'        => '<i class="main_icons split_button"></i>',
