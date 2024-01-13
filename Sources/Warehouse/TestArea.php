@@ -25,7 +25,7 @@ class TestArea
 
 		isAllowedTo('warehouse_manage_boxes_any');
 
-		loadLanguage('Admin');
+		loadLanguage('Admin+ManageMembers');
 
 		$context['canonical_url'] = WH_BASE_URL . ';sa=test';
 
@@ -118,7 +118,7 @@ class TestArea
 						'function' => function ($entry) use ($context, $txt) {
 							$buttons = [
 								'<a class="button" href="' . $context['canonical_url'] . ';run=approve;id=' . $entry['id'] . '"><span class="main_icons like"></span> ' . $txt['approve'] . '</a>',
-								'<a class="button" href="' . $context['canonical_url'] . ';run=reject;id=' . $entry['id'] . '"><span class="main_icons ignore"></span> ' . $txt['unapprove'] . '</a>',
+								'<a class="button" href="' . $context['canonical_url'] . ';run=reject;id=' . $entry['id'] . '"><span class="main_icons ignore"></span> ' . $txt['admin_browse_w_reject'] . '</a>',
 							];
 
 							return implode(' ', $buttons);
