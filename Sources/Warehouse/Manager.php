@@ -9,7 +9,7 @@
  * @copyright 2023-2024 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.1
+ * @version 0.2
  */
 
 namespace Bugo\Warehouse;
