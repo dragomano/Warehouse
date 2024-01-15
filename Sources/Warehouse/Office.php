@@ -56,7 +56,7 @@ class Office
 			['text', 'warehouse_accepted_types', '" style="width:100%" placeholder="' . WH_ACCEPTED_FILE_TYPES],
 			'',
 			['int', 'warehouse_boxes_per_rack'],
-			['int', 'warehouse_boxes_per_page'],
+			['int', 'warehouse_boxes_per_page', 'min' => 1],
 			'',
 			['check', 'warehouse_enable_activity_chart'],
 			[

@@ -95,6 +95,15 @@ class Rack
 				'params'   => $params,
 			],
 			'columns' => [
+				'id' => [
+					'data' => [
+						'db' => 'id',
+					],
+					'sort' => [
+						'default' => 'wb.id DESC',
+						'reverse' => 'wb.id',
+					],
+				],
 				'date' => [
 					'data' => [
 						'db' => 'created_at',
@@ -492,12 +501,9 @@ class Rack
 
 		$request = $smcFunc['db_query']('', '
 			SELECT wb.id, wb.owner_id, wb.title, wb.description, wb.num_views, wb.num_things, wb.created_at, wb.updated_at,
-				a.id_attach, a.attachment_type, a.filename, a.file_hash, a.fileext, a.mime_type,
 				COALESCE(mem.real_name, {string:guest}) AS poster_name
 			FROM {db_prefix}warehouse_boxes AS wb
-				INNER JOIN {db_prefix}warehouse_things AS wt ON (wb.id = wt.box_id)
-				INNER JOIN {db_prefix}attachments AS a ON (wt.attach_id = a.id_attach AND a.id_thumb = 0)
-				LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = wb.owner_id)
+				LEFT JOIN {db_prefix}members AS mem ON (wb.owner_id = mem.id_member)
 			WHERE wb.status = {int:status}' . (empty($query_string) ? '' : '
 				' . $query_string) . '
 			ORDER BY {raw:sort}
@@ -543,8 +549,6 @@ class Rack
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(wb.id)
 			FROM {db_prefix}warehouse_boxes AS wb
-				INNER JOIN {db_prefix}warehouse_things AS wt ON (wb.id = wt.box_id)
-				INNER JOIN {db_prefix}attachments AS a ON (wt.attach_id = a.id_attach AND a.id_thumb = 0)
 			WHERE wb.status = {int:status}' . (empty($query_string) ? '' : '
 				' . $query_string),
 			array_merge($query_params, [
