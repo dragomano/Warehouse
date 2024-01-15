@@ -123,10 +123,10 @@ function show_pagination()
 {
 	global $context;
 
-	if ($context['wh_boxes']['items_per_page'] >= $context['wh_boxes']['total_num_items'])
+	if (empty($context['wh_boxes']['total_num_items']) || $context['wh_boxes']['items_per_page'] >= $context['wh_boxes']['total_num_items'])
 		return;
 
-	if (!empty($context['wh_boxes']['items_per_page']) && !empty($context['wh_boxes']['page_index']))
+	if (! empty($context['wh_boxes']['items_per_page']) && ! empty($context['wh_boxes']['page_index']))
 		echo '
 	<div class="pagesection">
 		<div class="centertext">', $context['wh_boxes']['page_index'], '</div>
