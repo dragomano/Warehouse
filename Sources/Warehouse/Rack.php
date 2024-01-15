@@ -543,8 +543,6 @@ class Rack
 		$request = $smcFunc['db_query']('', '
 			SELECT COUNT(wb.id)
 			FROM {db_prefix}warehouse_boxes AS wb
-				INNER JOIN {db_prefix}warehouse_things AS wt ON (wb.id = wt.box_id)
-				INNER JOIN {db_prefix}attachments AS a ON (wt.attach_id = a.id_attach AND a.id_thumb = 0)
 			WHERE wb.status = {int:status}' . (empty($query_string) ? '' : '
 				' . $query_string),
 			array_merge($query_params, [
