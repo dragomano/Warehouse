@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -60,8 +60,9 @@ class Thing
 				$attachIDs[] = $attachmentOptions['id'];
 				$num_things++;
 
-				if (! empty($attachmentOptions['thumb']))
+				if (! empty($attachmentOptions['thumb'])) {
 					$attachIDs[] = $attachmentOptions['thumb'];
+				}
 			} elseif (function_exists('dd')) {
 				dd($attachmentOptions, $item);
 			}
@@ -76,7 +77,7 @@ class Thing
 				'attach_id'  => $id,
 				'box_id'     => $box,
 				'owner_id'   => $user_info['id'],
-				'created_at' => time()
+				'created_at' => time(),
 			];
 		}
 
@@ -90,7 +91,7 @@ class Thing
 					'attach_id'  => 'int',
 					'box_id'     => 'int',
 					'owner_id'   => 'int',
-					'created_at' => 'int'
+					'created_at' => 'int',
 				],
 				$things[$i],
 				['id'],
@@ -140,8 +141,9 @@ class Thing
 		}
 
 		// Check size
-		if ($attachment['size'] > WH_SIZE_LIMIT)
+		if ($attachment['size'] > WH_SIZE_LIMIT) {
 			fatal_error(sprintf($txt['warehouse_error_size'], WH_SIZE_LIMIT / 1024 / 1024), false);
+		}
 
 		// Check extension
 		$accepted_types = explode(',', WH_ACCEPTED_FILE_TYPES);
@@ -151,8 +153,9 @@ class Thing
 		$allowed_types  = implode(',', array_unique($accepted_types));
 		$accepted_types = explode(',', $allowed_types);
 
-		if (! in_array($attachment['extension'], $accepted_types))
+		if (! in_array($attachment['extension'], $accepted_types)) {
 			fatal_error($txt['cant_upload_type'] . ': ' . $allowed_types, false);
+		}
 	}
 
 	private function prepareAcceptedTypes(): Closure
@@ -166,7 +169,7 @@ class Thing
 				'image/*'    => ['jpe', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'ico', 'svg', 'svgz', 'tif', 'tiff', 'ai', 'drw', 'pct', 'psp', 'psd', 'xcf', 'raw', 'webp'],
 				'audio/*'    => ['mp3', 'm4a', 'oga', 'flac', 'aac', 'aif', 'iff', 'm4b', 'mid', 'midi', 'mpa', 'mpc', 'ogg', 'opus', 'ra', 'ram', 'snd', 'wav', 'wma'],
 				'video/*'    => ['avi', 'divx', 'flv', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'ogx', 'rm', 'rmvb', 'smil', 'wbm', 'wmv', 'xvid'],
-				'text/plain' => ['text', 'txt']
+				'text/plain' => ['text', 'txt'],
 			];
 
 			$v = trim($v);

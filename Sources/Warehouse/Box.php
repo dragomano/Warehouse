@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -26,7 +26,7 @@ class Box
 		return 'There\'s something in it, or maybe not. Do you want to open it?';
 	}
 
-	public function show(int $box)
+	public function show(int $box): void
 	{
 		global $context;
 
@@ -34,6 +34,7 @@ class Box
 
 		if ($context['current_subaction'] === 'edit') {
 			$this->edit($box);
+
 			return;
 		}
 
@@ -78,7 +79,7 @@ class Box
 
 		isAllowedTo(['warehouse_manage_boxes_own', 'warehouse_manage_boxes_any']);
 
-		$racks = (new Rack)->getAll();
+		$racks = (new Rack())->getAll();
 
 		$context['robot_no_index'] = true;
 
@@ -101,7 +102,7 @@ class Box
 				'size'      => '100%',
 				'maxlength' => 255,
 				'required'  => true,
-				'value'     => $_REQUEST['title'] ?? ''
+				'value'     => $_REQUEST['title'] ?? '',
 			]
 		];
 
@@ -109,7 +110,7 @@ class Box
 		$context['posting_fields']['rack']['input'] = [
 			'type' => 'select',
 			'attributes' => [
-				'id' => 'rack'
+				'id' => 'rack',
 			],
 			'options' => [],
 		];
@@ -117,7 +118,7 @@ class Box
 		foreach ($racks as $id => $rack) {
 			$context['posting_fields']['rack']['input']['options'][$rack['title']] = [
 				'value'    => $id,
-				'selected' => $id == ($_REQUEST['rack'] ?? 1)
+				'selected' => $id == ($_REQUEST['rack'] ?? 1),
 			];
 		}
 
@@ -129,18 +130,19 @@ class Box
 
 		$context['sub_template'] = 'add';
 
-		if (isset($_REQUEST['post']))
+		if (isset($_REQUEST['post'])) {
 			$this->post();
+		}
 	}
 
-	public function edit(int $box)
+	public function edit(int $box): void
 	{
 		global $context, $txt;
 
 		if (! $this->isCanEdit())
 			return;
 
-		$racks = (new Rack)->getAll();
+		$racks = (new Rack())->getAll();
 
 		$context['robot_no_index'] = true;
 
@@ -150,7 +152,7 @@ class Box
 
 		$context['linktree'][] = [
 			'url'  => WH_BASE_URL . ';rack=' . $context['wh_box']['rack']['id'],
-			'name' => $context['wh_box']['rack']['title']
+			'name' => $context['wh_box']['rack']['title'],
 		];
 
 		$context['linktree'][] = [
@@ -171,7 +173,7 @@ class Box
 				'size'      => '100%',
 				'maxlength' => 255,
 				'required'  => true,
-				'value'     => $_REQUEST['title'] ?? $context['wh_box']['title'] ?? ''
+				'value'     => $_REQUEST['title'] ?? $context['wh_box']['title'] ?? '',
 			]
 		];
 
@@ -179,7 +181,7 @@ class Box
 		$context['posting_fields']['rack']['input'] = [
 			'type' => 'select',
 			'attributes' => [
-				'id' => 'rack'
+				'id' => 'rack',
 			],
 			'options' => [],
 		];
@@ -187,7 +189,7 @@ class Box
 		foreach ($racks as $id => $rack) {
 			$context['posting_fields']['rack']['input']['options'][$rack['title']] = [
 				'value'    => $id,
-				'selected' => $id == ($_REQUEST['rack'] ?? $context['wh_box']['rack']['id'] ?? 1)
+				'selected' => $id == ($_REQUEST['rack'] ?? $context['wh_box']['rack']['id'] ?? 1),
 			];
 		}
 
@@ -199,18 +201,19 @@ class Box
 
 		$context['sub_template'] = 'edit';
 
-		if (isset($_REQUEST['update']))
+		if (isset($_REQUEST['update'])) {
 			$this->update();
+		}
 	}
 
-	public function remove(int $box)
+	public function remove(int $box): void
 	{
 		global $context, $sourcedir;
 
 		if (! $this->isCanEdit())
 			return;
 
-		(new Cleaner)->removeBoxes([$box]);
+		(new Cleaner())->removeBoxes([$box]);
 
 		$this->decrement('racks', $context['wh_box']['rack']['id'], 'num_boxes');
 
@@ -232,8 +235,9 @@ class Box
 		$title       = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-		if (empty($rack) || empty($title) || empty($_FILES['things']))
+		if (empty($rack) || empty($title) || empty($_FILES['things'])) {
 			fatal_error($txt['warehouse_empty_data'], false);
+		}
 
 		$data = [
 			'rack_id'     => $rack,
@@ -262,7 +266,7 @@ class Box
 		$link = sprintf(/** @lang text */ '<a href="%s;box=%s">%s</a>', WH_BASE_URL, $id, $title);
 		$this->logAction('add_box', ['box' => $link]);
 
-		$num_things = (new Thing)->add($id);
+		$num_things = (new Thing())->add($id);
 
 		if ($num_things) {
 			$this->increment('racks', $rack, 'num_boxes');
@@ -282,8 +286,9 @@ class Box
 		$title       = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-		if (empty($rack) || empty($title) || empty($_FILES['things']))
+		if (empty($rack) || empty($title) || empty($_FILES['things'])) {
 			fatal_error($txt['warehouse_empty_data'], false);
+		}
 
 		$data = [
 			'id'          => $context['wh_box']['id'],
@@ -316,7 +321,7 @@ class Box
 		}
 
 		// Add new things
-		$num_things = (new Thing)->add($context['wh_box']['id']);
+		$num_things = (new Thing())->add($context['wh_box']['id']);
 
 		if ($num_things) {
 			$this->increment('racks', $rack, 'num_boxes');
@@ -386,8 +391,12 @@ class Box
 
 		$smcFunc['db_free_result']($request);
 
-		if (isset($data['status']) && $data['status'] === 2 && (! $data['is_own'] && ! allowedTo('warehouse_manage_boxes_any')))
+		if (
+			isset($data['status']) && $data['status'] === 2
+			&& (! $data['is_own'] && ! allowedTo('warehouse_manage_boxes_any'))
+		) {
 			$data = [];
+		}
 
 		return $data ?? [];
 	}
@@ -420,20 +429,30 @@ class Box
 				'name'         => $row['filename'],
 				'hash'         => $row['file_hash'],
 				'ext'          => $row['fileext'],
-				'size'         => ($row['size'] < 1024000) ? round($row['size'] / 1024, 2) . ' ' . $txt['kilobyte'] : round($row['size'] / 1024 / 1024, 2) . ' ' . $txt['megabyte'],
+				'size'         => $this->getSize((int) $row['size']),
 				'downloads'    => (int) $row['downloads'],
 				'mime'         => $row['mime_type'],
 				'created_at'   => timeformat($row['created_at']),
 				'requested_at' => empty($row['requested_at']) ? $txt['never'] : timeformat($row['requested_at']),
 			];
 
-			if ($row['width'])
+			if ($row['width']) {
 				$things[$row['id_attach']]['thumb_url'] = $scripturl . '?action=dlattach;box=' . $box . ';attach=' . ($row['id_attach'] + 1);
+			}
 		}
 
 		$smcFunc['db_free_result']($request);
 
 		return $things;
+	}
+
+	private function getSize(int $size): string
+	{
+		global $txt;
+
+		return $size < 1024000
+			? round($size / 1024, 2) . ' ' . $txt['kilobyte']
+			: round($size / 1024 / 1024, 2) . ' ' . $txt['megabyte'];
 	}
 
 	private function updateNumViews(int $box): void
@@ -451,6 +470,8 @@ class Box
 	{
 		global $context;
 
-		return (allowedTo('warehouse_manage_boxes_own') && $context['wh_box']['is_own']) || allowedTo('warehouse_manage_boxes_any');
+		return (
+			allowedTo('warehouse_manage_boxes_own') && $context['wh_box']['is_own']
+		) || allowedTo('warehouse_manage_boxes_any');
 	}
 }

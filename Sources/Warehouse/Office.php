@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -41,7 +41,8 @@ class Office
 		$config_vars = [];
 
 		foreach ($context['languages'] as $lang) {
-			$txt['warehouse_menu_item_' . $lang['filename']] = $txt['warehouse_menu_item'] . (count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '');
+			$postfix = count($context['languages']) > 1 ? ' [<strong>' . $lang['filename'] . '</strong>]' : '';
+			$txt['warehouse_menu_item_' . $lang['filename']] = $txt['warehouse_menu_item'] . $postfix;
 			$config_vars[] = [
 				'text',
 				'warehouse_menu_item_' . $lang['filename']

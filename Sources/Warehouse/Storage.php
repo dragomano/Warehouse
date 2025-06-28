@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -34,21 +34,22 @@ class Storage
 		isAllowedTo('warehouse_view');
 
 		$subActions = [
-			'box'  => [new Box, 'show'],
-			'rack' => [new Rack, 'show'],
+			'box'  => [new Box(), 'show'],
+			'rack' => [new Rack(), 'show'],
 		];
 
 		foreach ($subActions as $action => $callback) {
-			if (isset($_REQUEST[$action]))
+			if (isset($_REQUEST[$action])) {
 				return call_user_func($callback, (int) $_REQUEST[$action]);
+			}
 		}
 
 		$this->show();
 	}
 
-	public function show()
+	public function show(): void
 	{
-		global $context, $scripturl, $txt;
+		global $context, $txt;
 
 		loadTemplate('Warehouse/Storage', ['admin', 'warehouse']);
 
@@ -65,7 +66,7 @@ class Storage
 
 		$context['warehouse_boxes'] = $this->getBoxes();
 
-		$context['warehouse_racks'] = (new Rack)->getAll();
+		$context['warehouse_racks'] = (new Rack())->getAll();
 
 		$context['wh_buttons'] = [
 			[
@@ -73,21 +74,21 @@ class Storage
 				'title'       => $txt['warehouse_buttons'][0],
 				'is_selected' => empty($context['current_subaction']),
 				'icon'        => '<i class="main_icons notify_button"></i>',
-				'show'        => true
+				'show'        => true,
 			],
 			[
 				'href'        => WH_BASE_URL . ';sa=user',
 				'title'       => $txt['warehouse_buttons'][1],
 				'is_selected' => $context['current_subaction'] === 'user',
 				'icon'        => '<i class="main_icons packages"></i>',
-				'show'        => allowedTo('warehouse_manage_boxes_own')
+				'show'        => allowedTo('warehouse_manage_boxes_own'),
 			],
 			[
 				'href'        => WH_BASE_URL . ';sa=test',
 				'title'       => $txt['warehouse_buttons'][2],
 				'is_selected' => $context['current_subaction'] === 'test',
 				'icon'        => '<i class="main_icons split_button"></i>',
-				'show'        => allowedTo('warehouse_manage_boxes_any')
+				'show'        => allowedTo('warehouse_manage_boxes_any'),
 			],
 		];
 
@@ -259,8 +260,9 @@ class Storage
 			);
 
 			$items = [];
-			while ($row = $smcFunc['db_fetch_assoc']($request))
+			while ($row = $smcFunc['db_fetch_assoc']($request)) {
 				$items[$row['created_at']] = $row['amount'];
+			}
 
 			$smcFunc['db_free_result']($request);
 
@@ -268,15 +270,17 @@ class Storage
 				return '';
 
 			$activity = [];
-			foreach ($items as $date => $amount)
+			foreach ($items as $date => $amount) {
 				$activity[$date] = [
 					'name'  => $txt['days'][date('w', strtotime($date))],
 					'count' => $amount
 				];
+			}
 
 			$result = [];
-			foreach ($activity as $date => $value)
+			foreach ($activity as $date => $value) {
 				$result[] = '{name: "' . $value['name'] . ', ' . date('j', strtotime($date)) . ' ' . $txt['months'][date('n', strtotime($date))] . '", value: ' . $value['count'] . '}';
+			}
 
 			$activity = implode(',', $result);
 

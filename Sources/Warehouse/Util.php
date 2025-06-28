@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -38,7 +38,7 @@ trait Util
 		return ($owner_id === $context['user']['id'] && allowedTo('warehouse_manage_boxes_own')) || allowedTo('warehouse_manage_boxes_any');
 	}
 
-	private function increment(string $entity, int $item, string $column, int $amount = 1)
+	private function increment(string $entity, int $item, string $column, int $amount = 1): void
 	{
 		global $smcFunc;
 
@@ -50,17 +50,17 @@ trait Util
 				'entity' => $entity,
 				'column' => $column,
 				'amount' => $amount,
-				'item'   => $item
+				'item'   => $item,
 			]
 		);
 	}
 
-	private function decrement(string $entity, int $item, string $column, int $amount = 1)
+	private function decrement(string $entity, int $item, string $column, int $amount = 1): void
 	{
 		$this->increment($entity, $item, $column, -$amount);
 	}
 
-	private function prepareEditor(string $entity = 'box')
+	private function prepareEditor(string $entity = 'box'): void
 	{
 		global $sourcedir, $context;
 

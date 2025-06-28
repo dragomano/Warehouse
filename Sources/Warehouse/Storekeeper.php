@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -49,13 +49,15 @@ class Storekeeper
 						'function' => function ($entry) use ($scripturl, $context, $smcFunc) {
 							$link = '<a href="' . sprintf('%1$s?action=dlattach;box=%2$d;attach=%3$d', $scripturl, $entry['box'], $entry['id_attach']) . '"';
 
-							if (! empty($entry['width']) && ! empty($entry['height']))
+							if (! empty($entry['width']) && ! empty($entry['height'])) {
 								$link .= sprintf(' onclick="return reqWin(this.href' . ($entry['attachment_type'] == 1 ? '' : ' + \';image\'') . ', %1$d, %2$d, true);"', $entry['width'] + 20, $entry['height'] + 20);
+							}
 
 							$link .= sprintf('>%1$s</a>', preg_replace('~&amp;#(\\\\d{1,7}|x[0-9a-fA-F]{1,6});~', '&#\\\\1;', $smcFunc['htmlspecialchars']($entry['filename'])));
 
-							if (! empty($entry['width']) && ! empty($entry['height']))
+							if (! empty($entry['width']) && ! empty($entry['height'])) {
 								$link .= ' <span class="smalltext">' . $entry['width'] . 'x' . $entry['height'] . '</span>';
+							}
 
 							return $link;
 						},
@@ -70,9 +72,7 @@ class Storekeeper
 						'value' => $txt['attachment_file_size'],
 					],
 					'data' => [
-						'function' => function ($entry) use ($txt) {
-							return sprintf('%1$s%2$s', round($entry['size'] / 1024, 2), ' ' . $txt['kilobyte']);
-						},
+						'function' => fn($entry) => sprintf('%1$s%2$s', round($entry['size'] / 1024, 2), ' ' . $txt['kilobyte']),
 						'class' => 'centertext',
 					],
 					'sort' => [
@@ -85,12 +85,9 @@ class Storekeeper
 						'value' => $txt['posted_by'],
 					],
 					'data' => [
-						'function' => function ($entry) use ($smcFunc, $scripturl) {
-							if (empty($entry['id_member']))
-								return $smcFunc['htmlspecialchars']($entry['poster_name']);
-							else
-								return '<a href="' . $scripturl . '?action=profile;u=' . $entry['id_member'] . '">' . $entry['poster_name'] . '</a>';
-						},
+						'function' => fn($entry) => $entry['id_member']
+							? '<a href="' . $scripturl . '?action=profile;u=' . $entry['id_member'] . '">' . $entry['poster_name'] . '</a>'
+							: $smcFunc['htmlspecialchars']($entry['poster_name']),
 					],
 					'sort' => [
 						'default' => 'mem.real_name',
@@ -191,8 +188,9 @@ class Storekeeper
 		);
 
 		$files = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$files[] = $row;
+		}
 
 		$smcFunc['db_free_result']($request);
 

@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -36,9 +36,8 @@ class Manager
 		add_integration_function('integrate_admin_areas', __CLASS__ . '::adminAreas#', false, __FILE__);
 		add_integration_function('integrate_modify_modifications', __CLASS__ . '::modifications#', false, __FILE__);
 		add_integration_function('integrate_download_request', __CLASS__ . '::downloadRequest#', false, __FILE__);
-		#since 2.1.5
-		#add_integration_function('integrate_attachments_browse', __CLASS__ . '::attachmentsBrowse#', false, __FILE__);
-		#add_integration_function('integrate_attachment_remove', __CLASS__ . '::attachmentRemove#', false, __FILE__);
+		add_integration_function('integrate_attachments_browse', __CLASS__ . '::attachmentsBrowse#', false, __FILE__);
+		add_integration_function('integrate_attachment_remove', __CLASS__ . '::attachmentRemove#', false, __FILE__);
 		add_integration_function('integrate_remove_attachments', __CLASS__ . '::removeAttachments#', false, __FILE__);
 		add_integration_function('integrate_repair_attachments_nomsg', __CLASS__ . '::repairAttachmentsNomsg#', false, __FILE__);
 		add_integration_function('integrate_weekly_maintenance', __NAMESPACE__ . '\Cleaner::cleanStorage#', false, '$sourcedir/Warehouse/Cleaner.php');
@@ -116,7 +115,7 @@ class Manager
 	 */
 	public function actions(array &$actions): void
 	{
-		$actions[WH_ACTION] = ['Warehouse/Storage.php', [new Storage, 'init']];
+		$actions[WH_ACTION] = ['Warehouse/Storage.php', [new Storage(), 'init']];
 	}
 
 	/**
@@ -156,7 +155,7 @@ class Manager
 	/**
 	 * @hook integrate_admin_areas
 	 */
-	public function adminAreas(array &$admin_areas)
+	public function adminAreas(array &$admin_areas): void
 	{
 		global $txt;
 
@@ -166,9 +165,9 @@ class Manager
 	/**
 	 * @hook integrate_modify_modifications
 	 */
-	public function modifications(array &$subActions)
+	public function modifications(array &$subActions): void
 	{
-		$subActions['warehouse'] = [new Office, 'settings'];
+		$subActions['warehouse'] = [new Office(), 'settings'];
 	}
 
 	/**
@@ -222,13 +221,15 @@ class Manager
 	{
 		global $context, $txt;
 
-		if (isset($_REQUEST['wh_attach']))
+		if (isset($_REQUEST['wh_attach'])) {
 			$context['browse_type'] = 'wh_attach';
+		}
 
 		$titles['wh_attach'] = ['?action=admin;area=manageattachments;sa=browse;wh_attach', $txt['attachment_manager_attachments'] . ' ' . WH_NAME];
 
-		if (isset($_REQUEST['wh_attach']))
-			$listOptions = (new Storekeeper)->getListOptions();
+		if (isset($_REQUEST['wh_attach'])) {
+			$listOptions = (new Storekeeper())->getListOptions();
+		}
 	}
 
 	/**
@@ -236,8 +237,9 @@ class Manager
 	 */
 	public function attachmentRemove(bool &$filesRemoved, array $attachments): void
 	{
-		if ($_REQUEST['type'] === 'wh_attach' && ! empty($attachments))
+		if ($_REQUEST['type'] === 'wh_attach' && ! empty($attachments)) {
 			removeAttachments(['id_attach' => $attachments]);
+		}
 
 		$filesRemoved = true;
 	}
@@ -249,7 +251,7 @@ class Manager
 	 */
 	public function removeAttachments(array $items): void
 	{
-		(new Cleaner)->removeThings($items);
+		(new Cleaner())->removeThings($items);
 	}
 
 	/**
@@ -268,8 +270,9 @@ class Manager
 			[]
 		);
 
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$ignore_ids[] = $row['id_attach'];
+		}
 
 		$smcFunc['db_free_result']($request);
 	}
@@ -304,6 +307,6 @@ class Manager
 	{
 		global $context;
 
-		$context['copyrights']['mods'][] = '<a href="https://github.com/dragomano/Warehouse" target="_blank" rel="noopener">' . WH_NAME . '</a> &copy; 2023&ndash;2024, Bugo';
+		$context['copyrights']['mods'][] = '<a href="https://github.com/dragomano/Warehouse" target="_blank" rel="noopener">' . WH_NAME . '</a> &copy; 2023&ndash;' . date('Y') . ', Bugo';
 	}
 }

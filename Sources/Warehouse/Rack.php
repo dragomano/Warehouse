@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -28,7 +28,7 @@ class Rack
 		return 'Racks - convenient shelves for your boxes.';
 	}
 
-	public function show(int $rack)
+	public function show(int $rack): void
 	{
 		global $context, $txt, $sourcedir;
 
@@ -54,6 +54,7 @@ class Rack
 
 		if ($context['current_subaction'] === 'edit') {
 			$this->edit($rack);
+
 			return;
 		}
 
@@ -64,19 +65,22 @@ class Rack
 		}
 
 		if ($context['current_subaction'] === 'add') {
-			(new Box)->add($rack);
+			(new Box())->add($rack);
+
 			return;
 		}
 
 		if ($context['current_subaction'] === 'search') {
 			$this->search();
+
 			return;
 		}
 
 		$context['wh_top_boxes'] = $this->getTopBoxes($rack, 3);
 
-		if (isset($_REQUEST['delete_selected']) && ! empty($_REQUEST['boxes']))
+		if (isset($_REQUEST['delete_selected']) && ! empty($_REQUEST['boxes'])) {
 			$this->removeBoxes($_REQUEST['boxes']);
+		}
 
 		$params = [' AND wb.rack_id = {int:rack}', ['rack' => $rack]];
 
@@ -223,7 +227,7 @@ class Rack
 				'size'      => '100%',
 				'maxlength' => 255,
 				'required'  => true,
-				'value'     => $_REQUEST['title'] ?? ''
+				'value'     => $_REQUEST['title'] ?? '',
 			]
 		];
 
@@ -235,11 +239,12 @@ class Rack
 
 		$context['sub_template'] = 'post_rack';
 
-		if (isset($_REQUEST['post']))
+		if (isset($_REQUEST['post'])) {
 			$this->post();
+		}
 	}
 
-	public function edit(int $rack)
+	public function edit(int $rack): void
 	{
 		global $context, $txt;
 
@@ -275,7 +280,7 @@ class Rack
 				'size'      => '100%',
 				'maxlength' => 255,
 				'required'  => true,
-				'value'     => $_REQUEST['title'] ?? $context['wh_rack']['title'] ?? ''
+				'value'     => $_REQUEST['title'] ?? $context['wh_rack']['title'] ?? '',
 			]
 		];
 
@@ -287,17 +292,18 @@ class Rack
 
 		$context['sub_template'] = 'post_rack';
 
-		if (isset($_REQUEST['update']))
+		if (isset($_REQUEST['update'])) {
 			$this->update();
+		}
 	}
 
-	public function remove(int $rack)
+	public function remove(int $rack): void
 	{
 		global $smcFunc;
 
 		isAllowedTo('warehouse_manage_boxes_any');
 
-		(new Cleaner)->removeRacks([$rack]);
+		(new Cleaner())->removeRacks([$rack]);
 
 		$request = $smcFunc['db_query']('', '
 			SELECT id
@@ -309,8 +315,9 @@ class Rack
 		);
 
 		$boxes = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$boxes[] = (int) $row['id'];
+		}
 
 		$smcFunc['db_free_result']($request);
 
@@ -326,8 +333,9 @@ class Rack
 		$title       = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-		if (empty($title))
+		if (empty($title)) {
 			fatal_error($txt['warehouse_empty_data'], false);
+		}
 
 		$data = [
 			'title'       => $title,
@@ -360,8 +368,9 @@ class Rack
 		$title       = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 		$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-		if (empty($title))
+		if (empty($title)) {
 			fatal_error($txt['warehouse_empty_data'], false);
+		}
 
 		$data = [
 			'id'          => $context['wh_rack']['id'],
@@ -563,14 +572,14 @@ class Rack
 		return (int) $num_entries;
 	}
 
-	public function removeBoxes(array $boxes = [])
+	public function removeBoxes(array $boxes = []): void
 	{
 		global $context, $smcFunc, $sourcedir;
 
 		if (empty($boxes) || empty($context['user']['is_admin']))
 			return;
 
-		(new Cleaner)->removeBoxes($boxes);
+		(new Cleaner())->removeBoxes($boxes);
 
 		foreach ($boxes as $box) {
 			$this->decrement('racks', $context['wh_rack']['id'], 'num_boxes');

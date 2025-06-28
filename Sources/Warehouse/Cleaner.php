@@ -6,10 +6,10 @@
  * @package Warehouse
  * @link https://github.com/dragomano/Warehouse
  * @author Bugo <bugo@dragomano.ru>
- * @copyright 2023-2024 Bugo
+ * @copyright 2023-2025 Bugo
  * @license https://opensource.org/licenses/MIT The MIT License
  *
- * @version 0.2
+ * @version 0.3
  */
 
 namespace Bugo\Warehouse;
@@ -91,7 +91,7 @@ class Cleaner
 				AND status = {int:status}',
 			[
 				'num_things' => 0,
-				'status' => 1,
+				'status'     => 1,
 			]
 		);
 	}
@@ -110,8 +110,9 @@ class Cleaner
 		);
 
 		$racks = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$racks[$row['id']] = $row['num_boxes'];
+		}
 
 		$smcFunc['db_free_result']($request);
 
@@ -119,8 +120,9 @@ class Cleaner
 			return;
 
 		$line = '';
-		foreach ($racks as $rack_id => $num_boxes)
+		foreach ($racks as $rack_id => $num_boxes) {
 			$line .= ' WHEN id = ' . $rack_id . ' THEN ' . $num_boxes;
+		}
 
 		$smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}warehouse_racks
@@ -146,8 +148,9 @@ class Cleaner
 		);
 
 		$boxes = [];
-		while ($row = $smcFunc['db_fetch_assoc']($request))
+		while ($row = $smcFunc['db_fetch_assoc']($request)) {
 			$boxes[$row['id']] = $row['num_things'];
+		}
 
 		$smcFunc['db_free_result']($request);
 
@@ -155,15 +158,16 @@ class Cleaner
 			return;
 
 		$line = '';
-		foreach ($boxes as $box_id => $num_things)
+		foreach ($boxes as $box_id => $num_things) {
 			$line .= ' WHEN id = ' . $box_id . ' THEN ' . $num_things;
+		}
 
 		$smcFunc['db_query']('', /** @lang text */ '
 			UPDATE {db_prefix}warehouse_boxes
 			SET num_things = CASE ' . $line . ' ELSE num_things END
 			WHERE id IN ({array_int:boxes})',
 			[
-				'boxes' => array_keys($boxes)
+				'boxes' => array_keys($boxes),
 			]
 		);
 	}
